@@ -26,7 +26,7 @@ ClientUdp::ClientUdp(const std::string& address, uint16_t port, std::ostream& lo
 
     socketDescriptor = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
-    if (socketDescriptor == -1) {
+    if (socketDescriptor < 0) {
         throw std::runtime_error("Cannot create TCP socket: " + getError());
     }
 

@@ -105,12 +105,21 @@ int main(int argc, char **argv) {
             } else {
                 // Try several times and then give up
 
+                bool isReceived = false;
+
                 for (size_t i = 0; i < udpMaxTries; ++i) {
                     if (client->receive(msg)) {
+                        isReceived = true;
                         break;
                     }
 
                     client->send(msg);
+                }
+
+                if (isReceived) {
+                    std::cout << msg << std::endl;
+                } else {
+                    std::cout << "Error receiving response from server" << std::endl;
                 }
             }
         }

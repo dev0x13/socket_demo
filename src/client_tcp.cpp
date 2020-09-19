@@ -4,9 +4,9 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <poll.h>
 
 #include <socket_demo/defines.h>
-#include <poll.h>
 
 #include "utils.h"
 #include "client_tcp.h"
@@ -20,7 +20,7 @@ ClientTcp::ClientTcp(const std::string& address, uint16_t port, std::ostream& lo
 
     socketDescriptor = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-    if (socketDescriptor == -1) {
+    if (socketDescriptor < 0) {
         throw std::runtime_error("Cannot create TCP socket: " + getError());
     }
 
@@ -49,7 +49,7 @@ ClientTcp::ClientTcp(const std::string& address, uint16_t port, std::ostream& lo
         throw std::invalid_argument("Invalid socket address: " + address);
     }
 
-    if (connect(socketDescriptor, reinterpret_cast<sockaddr*>(socketAddress), sizeof(*socketAddress)) == -1) {
+    if (connect(socketDescriptor, reinterpret_cast<sockaddr*>(socketAddress), sizeof(*socketAddress)) < 0) {
         if (errno == EINPROGRESS) {
             // Connect may act asynchronously, so poll this socket till it ready for writing
             pollfd fd{ .fd = socketDescriptor, .events = POLLOUT, .revents = 0 };

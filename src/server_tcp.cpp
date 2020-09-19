@@ -1,6 +1,3 @@
-#include <socket_demo/defines.h>
-#include <socket_demo/server_delegate.h>
-
 #include <vector>
 #include <cstring>
 #include <csignal>
@@ -9,6 +6,9 @@
 #include <poll.h>
 #include <netinet/in.h>
 #include <unistd.h>
+
+#include <socket_demo/defines.h>
+#include <socket_demo/server_delegate.h>
 
 #include "server_tcp.h"
 #include "utils.h"
@@ -52,7 +52,7 @@ ServerTcp::ServerTcp(uint16_t port, std::ostream& logStream, int maxNumConnectio
 
     int listeningSocket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-    if (listeningSocket == -1) {
+    if (listeningSocket < 0) {
         throw std::runtime_error("Cannot create TCP socket: " + getError());
     }
 
@@ -92,12 +92,12 @@ ServerTcp::ServerTcp(uint16_t port, std::ostream& logStream, int maxNumConnectio
     socketAddress.sin_port = htons(port);
     socketAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    if (bind(listeningSocket, reinterpret_cast<sockaddr*>(&socketAddress), sizeof(socketAddress)) == -1) {
+    if (bind(listeningSocket, reinterpret_cast<sockaddr*>(&socketAddress), sizeof(socketAddress)) < 0) {
         close(listeningSocket);
         throw std::runtime_error("Cannot bind TCP socket: " + getError());
     }
 
-    if (listen(listeningSocket, maxNumConnections) == -1) {
+    if (listen(listeningSocket, maxNumConnections) < 0) {
         close(listeningSocket);
         throw std::runtime_error("Cannot listen TCP socket: " + getError());
     }
@@ -116,7 +116,7 @@ void ServerTcp::eventLoop(ServerDelegate *serverDelegate) {
         // 1. Poll stored descriptors until new connection is requested or
         // any connection socket is readable
 
-        if (poll(descriptors.data(), descriptors.size(), -1) == -1) {
+        if (poll(descriptors.data(), descriptors.size(), -1) < 0) {
             throw std::runtime_error("Socket polling failed!");
         }
 

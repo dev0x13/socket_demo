@@ -1,6 +1,3 @@
-#include <socket_demo/defines.h>
-#include <socket_demo/server_delegate.h>
-
 #include <vector>
 #include <cstring>
 #include <csignal>
@@ -8,6 +5,9 @@
 #include <netinet/in.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+
+#include <socket_demo/defines.h>
+#include <socket_demo/server_delegate.h>
 
 #include "server_udp.h"
 #include "utils.h"
@@ -44,7 +44,7 @@ ServerUdp::ServerUdp(uint16_t port, std::ostream& logStream) : logStream(logStre
 
     udpSocketDescriptor = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
 
-    if (udpSocketDescriptor == -1) {
+    if (udpSocketDescriptor < 0) {
         throw std::runtime_error("Cannot create UDP socket: " + getError());
     }
 
@@ -68,7 +68,7 @@ ServerUdp::ServerUdp(uint16_t port, std::ostream& logStream) : logStream(logStre
     socketAddress.sin_port = htons(port);
     socketAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 
-    if (bind(udpSocketDescriptor, reinterpret_cast<sockaddr*>(&socketAddress), sizeof(socketAddress)) == -1) {
+    if (bind(udpSocketDescriptor, reinterpret_cast<sockaddr*>(&socketAddress), sizeof(socketAddress)) < 0) {
         close(udpSocketDescriptor);
         throw std::runtime_error("Cannot bind UDP socket: " + getError());
     }
