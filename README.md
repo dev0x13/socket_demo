@@ -70,7 +70,7 @@ george@george:~/socket_demo/_stage$ ./server 8888 TCP
 ```
 
 Терминал 2:
-```
+```bash
 george@george:~/socket_demo/_stage$ ./client 127.0.0.1 8888 TCP
 Enter your message: hello
 hello
@@ -87,7 +87,7 @@ george@george:~/socket_demo/_stage$ ./server 8888 TCP
 ```
 
 Терминал 2:
-```
+```bash
 george@george:~/socket_demo/_stage$ ./smoke_test 127.0.0.1 8888 TCP 5 1024
 OK!
 ```
