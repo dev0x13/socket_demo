@@ -1,50 +1,51 @@
-# Тестовое задание на сокеты
+# C++ test task using Berkeley Sockets API
 
-Пакет содержит решение тестового задания на C++, сборка производится с помощью CMake.
+This repository hosts the implementation of C++ test task. Build is performed using CMake.
 
-## Постановка задачи
+## Problem statement
 
-Необходимо разработать два приложения под Linux: клиент и сервер.
+Need to develop two Linux applications: a client and a server.
 
-Клиент посылает введенное пользователем на консоль сообщение, сервер при получении данного сообщения обрабатывает его: находит в данном сообщении все числа, вычисляет их сумму и отправляет в ответ результат. Если в сообщении от клиента нет ни одного числа, то сервер должен просто отправить в ответ клиенту полученное сообщение. Можно считать, что для хранения каждого из чисел в сообщении хватает размерности встроенных типов.
+Client sends a message entered by user, and server processes this message once received: looks for all integer numbers in the message, calculates the sum and sends the result back.
+If the message does not contain any numbers, server just echoes the source message. It can be assumed that default types can store all integer numbers present in message.
 
-Допустим, клиент отправил сообщение:
+Assuming client sent the following message:
 ```
 20 apples, 30 bananas, 15 peaches and 1 watermelon
 ```
- в ответ он должен получить сообщение: 
+They should receive the following response:
 ```
 1 15 20 30
 66
 ```
 
-**Обязательные требования:**
+**Mandatory requirements:**
 
-* При реализации используйте С++/C (использование STL приветствуется, сторонних библиотек - нет).
-* Работа с сетью должна выполняться средствами Berkeley sockets API (использование сторонних фреймворков для работы с сетью не допускается).
-* Клиент и сервер должны поддерживать следующие протоколы: TCP, UDP.
-* Сервер должен корректно обслуживать несколько одновременно подключенных клиентов по любому из перечисленных выше протоколов.
-* Клиент может выбирать (при старте приложения), какой протокол будет использован для взаимодействия с сервером, при этом должна быть возможность отправки нескольких сообщений без перезапуска или переустановки соединения.
+* C++ or C should be used for implementation (STL library usage is welcome, others are not).
+* Network communication should be implemented using Berkeley Sockets API (other third-party libraries and frameworks are not allowed).
+* Both client and server should support the following protocols: TCP, UDP.
+* Server should be able to correctly process multiple concurrent connection for both protocols.
+* Client should be able to choose (at application start) which protocol should be used for interactions with server. Client should also be able to send multiple messages without a need to restart the application or to reconnect to server.
 
-**На что стоит обратить внимание:**
+**Pay due attention to:**
 
-* Приложения должны легко собираться, приложениями должно быть легко и удобно пользоваться, они должны быть рассчитаны на длительную и стабильную работу, а также иметь возможность корректно завершаться.
-* Специфика работы с сетью в том, что многое может пойти не так (ошибки, некорректные данные, некорректное поведение удаленной стороны), приложения должны быть готовы к этому, учитывайте разницу между протоколами TCP и UDP.
-* По возможности старайтесь сделать реализацию эффективной и надежной (возможно удастся обойтись без использования потоков (threads) или сократить накладные расходы при их использовании).
+* The ease of building process; the quality of applications' UX; their ability to durable and stable operations; their ability to exit correctly.
+* Network interaction specifics are that many things can go wrong: errors, incorrect data, unexpected behavior of the remote side etc. Applications should be ready for that, so pay attention to the differences between TCP and UDP.
+* Try to make the implementation as much robust and efficient as possible e.g., try to avoid using threads etc.
 
-## Сборка и запуск проекта
+## Building and running the code
 
-### Системные требования
+### System requirements
 
- * ОС Linux
- * CMake 3.8+
- * Компилятор C++ с поддержкой C++11
+* Linux OS
+* CMake 3.8+
+* C++ compiler supporting C++11
  
- Код тестировался на Ubuntu 20.04 + GCC 9.3 + CMake 3.13.
+The implementation was tested in the following environment: Ubuntu 20.04, GCC 9.3, CMake 3.13.
  
-### Сборка
+### Building
  
-Сборка производится следующими командами:
+To build the project use the following snippets:
 ```bash
 mkdir _build
 cd _build
@@ -52,24 +53,23 @@ cmake ..
 cmake --build . --target install
 ``` 
 
-В результате будет создана папка `_stage/` с тремя исполняемыми файлами:
-* `client` - сам сервер; проткол, порт и остальные параметры задаются аргументами командной строки
-* `server` - клиент; параметры также задаются аргументами командной строки
-* `smoke_test` - простой тест, который проверяет работоспособность клиента и сервера, в том числе под нагрузкой
+After building, there will be the `_stage/` folder containing three executables:
+* `server` - the server itself; protocol, port and other parameters are defined with command line arguments
+* `client` - the client; parameters are also defined with command line arguments
+* `smoke_test` - simple test checking operability of both client and server (including concurrent connections)
 
-Каждый из исполняемых файлов снабжен минимальной документацией по его параметрам. Для ее просмотра необходимо
-запустить файл без аргументов.
+Each executable provides basic docstring describing its parameters.
 
-### Примеры запуска
+### Usage example
 
-#### TCP (для UDP вывод аналогичный)
+#### TCP (outputs for UDP are similar)
 
-Терминал 1:
+Terminal #1:
 ```bash
 george@george:~/socket_demo/_stage$ ./server 8888 TCP 
 ```
 
-Терминал 2:
+Terminal #2:
 ```bash
 george@george:~/socket_demo/_stage$ ./client 127.0.0.1 8888 TCP
 Enter your message: hello
@@ -79,28 +79,25 @@ Enter your message: 1 15 60
 76
 ```
 
-#### Smoke-тест
+#### Smoke-testing
 
-Терминал 1:
+Terminal #1:
 ```bash
 george@george:~/socket_demo/_stage$ ./server 8888 TCP 
 ```
 
-Терминал 2:
+Terminal #2:
 ```bash
 george@george:~/socket_demo/_stage$ ./smoke_test 127.0.0.1 8888 TCP 5 1024
 OK!
 ```
 
-## Комментарии к реализации
+## Comments on the implementation
 
-* Реализация сервера однопоточная, smoke-тест проверяет корректность работы сервера при одновременном
-обслуживании нескольких клиентов (корректность ответа и гарантия его получения).
-* В решении сделано ограничение на длину сообщения - 65507 байт (максимальная длина данных в 
-одном датаграме UDP). Ограничение введено для того, чтобы не реализовавать ARQ проткол поверх UDP.
-Для TCP это ограничение носит искусственный характер и введено для единообразия.
-* Сервер не может работать одновременно по двум протоколам, для этого нужно запускать отдельные экземпляры `server`
-с соответствующими аргументами. Принципиальных ограничений для этого нет, просто изначально я не обратил внимания на то,
-что задание можно трактовать и так.
-* Smoke-тест для UDP рекомендуется запускать с маленьким `operations_timeout_s` (1) и большим `operations_timeout_s`
-(пропорционально `operations_timeout_s`), так как иначе он не проходит по понятным причинам.
+* The implementation of server is single-threaded, and the smoke-test checks server's ability to serve multiple clients (response correctness and its receival guarantee).
+* The implementation limits the maximum message length to 65507 bytes (maximum data length in a single UDP datagram). This limitation is introduced to avoid ARQ protocol
+implmentation on top of the UDP. This limitation is entirely artificial for TCP implementation, and introduced for the sole purpose of interface consistency.
+* Server cannot operate using both TCP and UDP simultaneously - this can be only achieved with multiple `server` instances. There were no obstacles of implementing
+such a feature, but I didn't interpret the problem statement this way.
+* Smoke-test is recommended to be launched with small `operations_timeout_s` (1) and large `operations_timeout_s`
+(w.r.t. `operations_timeout_s`). Otherwise the test fails for obvious reasons.
